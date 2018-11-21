@@ -1,0 +1,177 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta name="content-type" content="text/html; charset=utf-8">
+    <title>boss</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <script src="{% static 'js/jquery.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/echarts.js' %}"   charset="utf-8"></script>
+
+</head>
+<body>
+<div class="navbar navbar-default navbar-fixed-top">
+    <div class="navbar-nav">
+        <a href="/" class="navbar-brand" ></a>
+    </div>
+    <label id="toggle-label" class="visible-xs inline-block" for="toggle-checkbox">MENU</label>
+    <input class="hidden" id="toggle-checkbox" type="checkbox">
+    <div class="hidden-xs">
+        <ul class="nav navbar-nav">
+
+                    <li><a   href="{% url   'index' 'coding_language' %}" style="background-color: #dddddd" >编程语言分类</a></li>
+					<li><a  href="{% url   'index' 'experience' %}" >工作经验分类</a></li>
+                    <li><a   href="{% url   'index' 'education' %}">学历分类</a></li>
+
+        </ul>
+
+
+    </div>
+</div>
+<div class="container-fluid" style="padding-top: 50px">
+    <div class="row">
+
+        <div class="col-sm-12">
+            <div id="chartmain" style="width:600px; height: 400px;margin:auto;"></div>
+            <div id="chartmain2" style="width:100%; height: 400px;margin:auto;"></div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript">
+    {#var data = genData(50);#}
+
+    {#var legendData = ['python', 'c', 'java'];#}
+    {#var seriesData = [{name: "python", value: 238}, {name: "c", value: 300}, {name: "java", value: 300},];#}
+    {#var selected = {python: true, c: true, java: true};#}
+    var legendData= {{ legendData | safe }}
+    var seriesData= {{ seriesData | safe }}
+    var selected = {{ selected | safe }}
+    var data = {legendData, seriesData, selected}
+
+    var option = {
+        title: {
+            text: '编程语言分类工作数',
+            {#subtext: '编程语言分类工作数',#}
+            x: 'center',
+            textStyle:{//标题内容的样式
+                    color:'#e4393c',//京东红
+                    fontStyle:'normal',//主标题文字字体风格，默认normal，有italic(斜体),oblique(斜体)
+                    fontWeight:"lighter",//可选normal(正常)，bold(加粗)，bolder(加粗)，lighter(变细)，100|200|300|400|500...
+                    fontFamily:"san-serif",//主题文字字体，默认微软雅黑
+                    fontSize:18//主题文字字体大小，默认为18px
+                },
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            type: 'scroll',
+            orient: 'vertical',
+            right: 10,
+            top: 20,
+            bottom: 20,
+            data: data.legendData,
+
+            selected: data.selected
+        },
+        series: [
+            {
+                name: '编程语言',
+                type: 'pie',
+                radius: '55%',
+                center: ['40%', '50%'],
+                data: data.seriesData,
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+
+var option3 = {
+    title: {
+        text: '编程语言和平均工资',
+         x: 'center',
+        textStyle:{//标题内容的样式
+                    color:'#e4393c',//京东红
+                    fontStyle:'normal',//主标题文字字体风格，默认normal，有italic(斜体),oblique(斜体)
+                    fontWeight:"lighter",//可选normal(正常)，bold(加粗)，bolder(加粗)，lighter(变细)，100|200|300|400|500...
+                    fontFamily:"san-serif",//主题文字字体，默认微软雅黑
+                    fontSize:18//主题文字字体大小，默认为18px
+                },
+
+    },
+    tooltip: {
+        trigger: 'axis',
+
+        axisPointer: {
+            type: 'shadow'
+        },
+
+    },
+    legend: {
+        x: 'right',
+        data:['min_salary','max_salary']
+    },
+    toolbox: {
+        show: true,
+        orient: 'vertical',
+        y: 'center',
+        feature: {
+            mark: {show: true},
+            dataView: {show: true, readOnly: false},
+            restore: {show: true},
+            saveAsImage: {show: true}
+        }
+    },
+    calculable: true,
+    grid: {
+        y: 80,
+        y2: 40,
+        x2: 40
+    },
+    xAxis: [
+        {
+            type: 'category',
+            data: legendData
+        }
+    ],
+    yAxis: [
+        {
+            type: 'value'
+        }
+    ],
+    series: [
+        {
+            name: 'min_salary',
+            type: 'bar',
+
+            data: {{ salary_min }}
+        },
+        {
+            name: 'max_salary',
+            type: 'bar',
+
+            data: {{ salary_max }}
+        },
+
+    ]
+};
+
+    //初始化echarts实例
+    var myChart = echarts.init(document.getElementById('chartmain'));
+    var myChart2 = echarts.init(document.getElementById('chartmain2'));
+    //使用制定的配置项和数据显示图表
+    myChart.setOption(option);
+    myChart2.setOption(option3);
+</script>
+</html>
